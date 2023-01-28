@@ -1,9 +1,9 @@
 /*
- *   arduino   ->    esp
- *      3      ->     D3
- *      4      ->     D4
- *     GND     ->    GND
- */
+     arduino   ->    esp
+        3      ->     D3
+        4      ->     D4
+       GND     ->    GND
+*/
 
 #include <SoftwareSerial.h>
 #include <dht.h>
@@ -29,10 +29,10 @@ SoftwareSerial mySerial(3, 4); // RX, TX
 void setup() {
   Serial.begin(9600);
   mySerial.begin(9600);
-  
+
   pinMode(LED, OUTPUT);
   Serial.println("pH meter experiment!");
-  
+
   Wire.begin();
   lightMeter.begin();
   Serial.println(F("BH1750 Test begin"));
@@ -42,7 +42,7 @@ void loop() {
   int sensorValue = analogRead(A3);
   int readData = DHT.read22(dataPin);
 
-  float voltage = sensorValue * (5.0 / 1024.0);
+  float turbidity = sensorValue * (5.0 / 1024.0);
   float t = DHT.temperature;
   float h = DHT.humidity;
   float pHValue, voltage1;
@@ -52,7 +52,7 @@ void loop() {
   unsigned long printTime = millis();
 
   Serial.println ("Sensor Output (V):");
-  Serial.println (voltage);
+  Serial.println (turbidity);
   Serial.println();
   delay(1000);
 
@@ -75,6 +75,7 @@ void loop() {
   Serial.println(" lx");
   delay(1000);
 
+  float voltage;
   if (millis() - samplingTime > samplingInterval)
   {
     pHArray[pHArrayIndex++] = analogRead(SensorPin);
@@ -83,7 +84,8 @@ void loop() {
     pHValue = 3.5 * voltage + Offset;
     samplingTime = millis();
   }
-  
+
+
   if (millis() - printTime > printInterval)  //Every 800 milliseconds, print a numerical, convert the state of the LED indicator
   {
     Serial.print("Voltage:");
@@ -97,7 +99,8 @@ void loop() {
     mySerial.print("Temp:" + String(t));
     mySerial.print(" Humid:" + String(h));
     mySerial.print(" Light:" + String(lux));
-    mySerial.print(" Voltage:" + String(voltage,2));
+    mySerial.print(" turbidity:" + String(turbidity, 2));
+    mySerial.print(" Voltage:" + String(voltage, 2));
     mySerial.print(" PH:" + String(pHValue, 2));
     mySerial.print("\n");
   }
